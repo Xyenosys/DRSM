@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  drsm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8091:5000" # Map external port 8091 to internal port 5000
+      - "28016:28016"
+      - "28017:28017"
+      - "28018:28018"
+      - "28082:28082"
+    volumes:
+      - ./rust_server:/home/steam/rust_server # Bind mount the local folder to the container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
