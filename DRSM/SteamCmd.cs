@@ -1,8 +1,10 @@
 ﻿using DRSM;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 public class SteamCmd
 {
+
     public static void SetupSteamCmd()
     {
         Console.WriteLine("Setting up SteamCMD...");
@@ -27,26 +29,42 @@ public class SteamCmd
     public static void InstallRustServer(string serverFolder)
     {
         Console.WriteLine("Installing Rust server...");
-        if (!File.Exists(serverFolder))
+
+        try
         {
-            // Ensure the server folder exists
-            var createServerDirResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"mkdir -p {serverFolder}\"");
-            if (createServerDirResult.Item1 != 0)
+            if (!Directory.Exists(serverFolder))
             {
-                throw new Exception($"Failed to create server directory: {createServerDirResult.Item2}");
+                // Ensure the server folder exists
+                Console.WriteLine($"Creating server folder: {serverFolder}");
+                var createServerDirResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"mkdir -p {serverFolder}\"");
+                if (createServerDirResult.Item1 != 0)
+                {
+                    string error = $"Failed to create server directory: {createServerDirResult.Item2}";
+                    Console.WriteLine(error);
+                    throw new Exception(error);
+                }
             }
-        }
-        // Command to download and install Rust server
-        string steamCmdExecutable = Path.Combine(Globals.SteamCmdDir, "steamcmd.sh");
-        string installCommand = $"+force_install_dir {serverFolder} +login anonymous +app_update 258550 +quit";
 
-        var installResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"{steamCmdExecutable} {installCommand}\"");
-        if (installResult.Item1 != 0)
+            string steamCmdExecutable = Path.Combine(Globals.SteamCmdDir, "steamcmd.sh");
+            string installCommand = $"+force_install_dir {serverFolder} +login anonymous +app_update 258550 +quit";
+
+            Console.WriteLine("Starting Rust server installation...");
+            var installResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"{steamCmdExecutable} {installCommand}\"");
+
+            if (installResult.Item1 != 0)
+            {
+                string error = $"Failed to install Rust server: {installResult.Item2}";
+                Console.WriteLine(error);
+                throw new Exception(error);
+            }
+
+            Console.WriteLine("Rust server installed successfully.");
+            
+        }
+        catch (Exception ex)
         {
-            throw new Exception($"Failed to install Rust server: {installResult.Item2}");
+            Console.WriteLine($"Error during installation: {ex.Message}");
         }
-
-        Console.WriteLine("Rust server installed successfully.");
     }
 
     #region Shell

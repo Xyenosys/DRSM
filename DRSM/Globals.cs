@@ -14,4 +14,5 @@ namespace DRSM
         public static string umodDownloadPath = "/home/steam/rust_server/umod.zip";
         public static string rustEditUrl = "https://github.com/k1lly0u/Oxide.Ext.RustEdit/raw/master/Oxide.Ext.RustEdit.dll"; // Direct link to the .dll file
     }
+
 }

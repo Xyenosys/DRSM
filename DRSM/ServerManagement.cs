@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace DRSM
 {
     internal class ServerManagement
     {
+
         private static Process _serverProcess;
 
         // Path to the Rust server executable
@@ -16,6 +18,8 @@ namespace DRSM
 
         // Arguments for the server (from Globals.ServerArguments)
         public static string ServerArguments = Globals.ServerArguments;
+
+
 
         // Starts the Rust server
         public static void StartServer()
@@ -55,7 +59,7 @@ namespace DRSM
                 {
                     if (!string.IsNullOrEmpty(args.Data))
                     {
-                        Console.WriteLine(args.Data); // Stream server output to the console
+                        Console.WriteLine(args.Data);
                     }
                 };
 
@@ -63,7 +67,7 @@ namespace DRSM
                 {
                     if (!string.IsNullOrEmpty(args.Data))
                     {
-                        Console.WriteLine($"ERROR: {args.Data}"); // Stream server errors to the console
+                        Console.WriteLine($"ERROR: {args.Data}");
                     }
                 };
 
@@ -71,6 +75,7 @@ namespace DRSM
                 _serverProcess.BeginOutputReadLine();
                 _serverProcess.BeginErrorReadLine();
                 ProcessResourceMonitor.StartMonitoring(_serverProcess);
+
 
                 Console.WriteLine($"Rust server started successfully with PID: {_serverProcess.Id}");
             }

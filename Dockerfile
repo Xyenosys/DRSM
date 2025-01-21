@@ -6,9 +6,9 @@ RUN apt-get update && apt-get install -y sudo curl lib32gcc-s1 procps net-tools
 # Create the steam user and add to sudoers
 RUN groupadd -g 1000 steam && \
     useradd -m -s /bin/bash -u 1000 -g 1000 steam && \
-    echo "steam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    mkdir -p /home/steam/Steam && \
-    chown -R steam:steam /home/steam
+    echo "steam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers #&& \
+#    mkdir -p /home/steam/Steam && \
+#    chown -R steam:steam /home/steam
 
 WORKDIR /app
 

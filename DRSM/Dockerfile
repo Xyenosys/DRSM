@@ -8,9 +8,7 @@ RUN groupadd -g 1000 steam && \
     useradd -m -s /bin/bash -u 1000 -g 1000 steam && \
     echo "steam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     mkdir -p /home/steam/Steam && \
-#	mkdir -p /home/steam/rust_server && \
-    chown -R steam:steam /home/steam && \
-#   chown -R steam:steam /home/steam/rust_server	
+    chown -R steam:steam /home/steam
 
 WORKDIR /app
 

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 public class RustServerController : ControllerBase
 {
 
+   
+
     // Start the server by sending a POST request with server arguments
     [HttpPost("start")]
     public IActionResult StartServer([FromBody] string arguments)
@@ -96,18 +98,4 @@ public class RustServerController : ControllerBase
         }
     }
 
-    // Get the status of the server
-    //[HttpGet("status")]
-    //public IActionResult GetServerStatus()
-    //{
-    //    try
-    //    {
-    //        var status = ServerManagement.GetServerStatus();
-    //        return Ok(status);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, $"Error getting server status: {ex.Message}");
-    //    }
-    //}
 }

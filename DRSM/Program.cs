@@ -1,4 +1,5 @@
 ﻿using DRSM;
+using System.Diagnostics;
 
 class Program
 {
@@ -63,8 +64,8 @@ class Program
             // Call your Install method
             await Task.Run(() => DownloadManager.DownloadUmod());
             return Results.Ok("Umod downloaded and installed successfully.");
-        });        
-        
+        });
+
         app.MapPost("/api/download-rustedit", async () =>
         {
             // Call your Install method
@@ -76,7 +77,7 @@ class Program
         app.Run("http://0.0.0.0:5000");
 
 
+
+
         Console.ReadLine();
     }
-
-}

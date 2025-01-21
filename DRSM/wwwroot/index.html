@@ -33,20 +33,28 @@
 	<button onclick="sendRequest('download-rustedit')">Download RustEdit</button>
 
     <div id="response">
-        <strong>Response:</strong>
-        <pre id="responseText">No action performed yet.</pre>
+        <h1>Rust Server Logs</h1>
+        <pre id="resourceContainer" style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd;"></pre>
     </div>
 
     <script>
+        let logFetchingInterval = null;
         async function sendRequest(action) {
-            const url = `/api/${action}`;
             try {
-                const response = await fetch(url, { method: "POST" });
-                const result = await response.text();
-                alert(result);
+                const response = await fetch(`/api/${action}`, { method: "POST" });
+                if (response.ok) {
+                    console.log(`${action.charAt(0).toUpperCase() + action.slice(1)} request sent successfully.`);
+
+                    if (action === "start") {
+                        startFetchingLogs();
+                    } else if (action === "stop") {
+                        stopFetchingLogs();
+                    }
+                } else {
+                    console.error(`Failed to send ${action} request.`);
+                }
             } catch (error) {
-                console.error("Error:", error);
-                alert("Failed to execute action: " + action);
+                console.error(`Error sending ${action} request:`, error);
             }
         }
     </script>

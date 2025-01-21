@@ -8,6 +8,7 @@ public static class ProcessResourceMonitor
 {
     private static Process _serverProcess;
 
+
     // Constructor takes the process you want to monitor
     public static void StartMonitoring(Process serverProcess)
     {
@@ -31,10 +32,12 @@ public static class ProcessResourceMonitor
                 var networkUsage = GetNetworkUsage();
 
                 // Print to the console (you can change this to log to a file or elsewhere)
-                Console.WriteLine($"CPU Usage: {cpuUsage}%");
-                Console.WriteLine($"RAM Usage: {ramUsage}MB");
-                Console.WriteLine($"Disk Usage: {diskUsage}%");
-                Console.WriteLine($"Network Usage: {networkUsage}");
+                Console.WriteLine($"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}");
+                //Console.WriteLine($"RAM Usage: {ramUsage}MB");
+                //Console.WriteLine($"Disk Usage: {diskUsage}%");
+                //Console.WriteLine($"Network Usage: {networkUsage}");
+                string resourceData = $"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}";
+
 
                 // Sleep for a second before the next check
                 Thread.Sleep(1000);
