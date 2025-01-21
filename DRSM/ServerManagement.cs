@@ -74,7 +74,6 @@ namespace DRSM
                 _serverProcess.Start();
                 _serverProcess.BeginOutputReadLine();
                 _serverProcess.BeginErrorReadLine();
-                ProcessResourceMonitor.StartMonitoring(_serverProcess);
 
 
                 Console.WriteLine($"Rust server started successfully with PID: {_serverProcess.Id}");

@@ -6,45 +6,42 @@ using System.Threading.Tasks;
 
 public static class ProcessResourceMonitor
 {
-    private static Process _serverProcess;
-
+    public static Process _serverProcess;
+    private static Action<string> _sendResourceUsageCallback;
 
     // Constructor takes the process you want to monitor
-    public static void StartMonitoring(Process serverProcess)
+    public static void StartMonitoring(Process serverProcess, Action<string> sendResourceUsageCallback, CancellationToken cancellationToken)
     {
         _serverProcess = serverProcess;
-
-        // Start a background task to monitor the process every second
-        Task.Run(() => MonitorProcessUsage());
+        _sendResourceUsageCallback = sendResourceUsageCallback;
+        Task.Run(() => MonitorProcessUsage(cancellationToken));
     }
 
-    // Monitors the resource usage of the server process
-    private static void MonitorProcessUsage()
+
+    private static void MonitorProcessUsage(CancellationToken cancellationToken)
     {
-        while (!_serverProcess.HasExited)
+        while (!_serverProcess.HasExited && !cancellationToken.IsCancellationRequested)
         {
-            try
+            while (!_serverProcess.HasExited)
             {
-                // Get CPU, RAM, and Disk usage
-                var cpuUsage = GetCpuUsage();
-                var ramUsage = GetRamUsage();
-                var diskUsage = GetDiskUsage();
-                var networkUsage = GetNetworkUsage();
+                try
+                {
 
-                // Print to the console (you can change this to log to a file or elsewhere)
-                Console.WriteLine($"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}");
-                //Console.WriteLine($"RAM Usage: {ramUsage}MB");
-                //Console.WriteLine($"Disk Usage: {diskUsage}%");
-                //Console.WriteLine($"Network Usage: {networkUsage}");
-                string resourceData = $"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}";
-
-
-                // Sleep for a second before the next check
-                Thread.Sleep(1000);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error monitoring process usage: {ex.Message}");
+                    // Get CPU, RAM, and Disk usage
+                    var cpuUsage = GetCpuUsage();
+                    var ramUsage = GetRamUsage();
+                    var diskUsage = GetDiskUsage();
+                    var networkUsage = GetNetworkUsage();
+                    // Print to the console (you can change this to log to a file or elsewhere)
+                    Console.WriteLine($"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}");
+                    string resourceData = $"CPU: {cpuUsage}% | RAM: {ramUsage}MB | Disk: {diskUsage}% | Network: {networkUsage}";
+                    _sendResourceUsageCallback(resourceData);
+                    Thread.Sleep(1000);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error monitoring process usage: {ex.Message}");
+                }
             }
         }
     }

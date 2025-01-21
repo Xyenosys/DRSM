@@ -1,5 +1,6 @@
 ﻿using DRSM;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 //using System.Web.Mvc;
@@ -9,22 +10,40 @@ using System.Runtime.InteropServices;
 public class RustServerController : ControllerBase
 {
 
-   
 
-    // Start the server by sending a POST request with server arguments
+
     [HttpPost("start")]
     public IActionResult StartServer([FromBody] string arguments)
     {
         try
         {
+            // Start the server
             ServerManagement.StartServer();
-            return Ok("Server started successfully.");
+
+            // Find the server process by name (adjust the name as needed)
+            var serverProcess = Process.GetProcessesByName("your-server-process-name").FirstOrDefault();
+            if (serverProcess == null)
+            {
+                return StatusCode(500, "Server process not found after starting.");
+            }
+
+            // Start resource monitoring
+            var cancellationTokenSource = new CancellationTokenSource();
+            HttpContext.Items["MonitoringToken"] = cancellationTokenSource; // Store the token for future stop calls
+            ProcessResourceMonitor.StartMonitoring(
+                serverProcess,
+                resourceData => Console.WriteLine(resourceData), // For now, logs to console
+                cancellationTokenSource.Token
+            );
+
+            return Ok(new { message = "Server started and monitoring initiated successfully." });
         }
         catch (Exception ex)
         {
             return StatusCode(500, $"Error starting server: {ex.Message}");
         }
     }
+
 
     // Stop the server by sending a POST request
     [HttpPost("stop")]

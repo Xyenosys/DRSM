@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,12 +29,12 @@
     <button onclick="sendRequest('stop')">Stop Server</button>
     <button onclick="sendRequest('restart')">Restart Server</button>
     <button onclick="sendRequest('install')">Install Server</button>
-	<button onclick="sendRequest('download-umod')">Download uMod</button>
-	<button onclick="sendRequest('download-rustedit')">Download RustEdit</button>
+    <button onclick="sendRequest('download-umod')">Download uMod</button>
+    <button onclick="sendRequest('download-rustedit')">Download RustEdit</button>
 
     <div id="response">
         <h1>Rust Server Logs</h1>
-        <pre id="resourceContainer" style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd;"></pre>
+        <pre id="logs" style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd;"></pre>
     </div>
 
     <script>
@@ -56,6 +56,135 @@
             } catch (error) {
                 console.error(`Error sending ${action} request:`, error);
             }
+
+            const socket = new WebSocket('ws://localhost:5000/ws');
+
+            // Handle incoming messages from the WebSocket server
+            socket.onmessage = function (event) {
+                const log = event.data;
+                const logsElement = document.getElementById('logs');
+                logsElement.innerHTML += `<p>${log}</p>`;
+            };
+
+            // Handle WebSocket errors
+            socket.onerror = function (error) {
+                console.error('WebSocket Error:', error);
+            };
+
+            // Handle WebSocket closure
+            socket.onclose = function (event) {
+                if (event.wasClean) {
+                    console.log('WebSocket closed cleanly');
+                } else {
+                    console.error('WebSocket closed with error');
+                }
+            };
+        }
+    </script>
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Control</title>
+</head>
+<body>
+    <h1>Server Control</h1>
+    <button onclick="startServer()">Start Server</button>
+    <button onclick="stopServer()">Stop Server</button>
+    <button onclick="restartServer()">Restart Server</button>
+    <button onclick="installServer()">Install Server</button>
+    <button onclick="downloadUmod()">Download Umod</button>
+    <button onclick="downloadRustEdit()">Download RustEdit</button>
+
+    <h2>Resource Usage</h2>
+    <div id="logs"></div>
+
+    <script>
+        // WebSocket for resource usage updates
+        const socket = new WebSocket('ws://localhost:5000/ws');
+
+        socket.onmessage = function (event) {
+            const log = event.data;
+            const logsElement = document.getElementById('logs');
+            logsElement.innerHTML += `<p>${log}</p>`;
+        };
+
+        socket.onerror = function (error) {
+            console.error('WebSocket Error:', error);
+        };
+
+        socket.onclose = function (event) {
+            if (event.wasClean) {
+                console.log('WebSocket closed cleanly');
+            } else {
+                console.error('WebSocket closed with error');
+            }
+        };
+
+        // Functions to call backend API for server control
+        function startServer() {
+            fetch('http://localhost:5000/api/start', { method: 'POST', body: JSON.stringify("start args") })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    startMonitoringWebSocket(); // Start WebSocket connection for monitoring
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function startMonitoringWebSocket() {
+            const socket = new WebSocket('ws://localhost:5000/ws');
+
+            socket.onmessage = function (event) {
+                const logsElement = document.getElementById('logs');
+                logsElement.innerHTML += `<p>${event.data}</p>`;
+            };
+
+            socket.onerror = function (error) {
+                console.error('WebSocket Error:', error);
+            };
+
+            socket.onclose = function () {
+                console.log('WebSocket closed.');
+            };
+        }
+
+        function stopServer() {
+            fetch('http://localhost:5000/api/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function restartServer() {
+            fetch('http://localhost:5000/api/restart', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function installServer() {
+            fetch('http://localhost:5000/api/install', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function downloadUmod() {
+            fetch('http://localhost:5000/api/download-umod', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function downloadRustEdit() {
+            fetch('http://localhost:5000/api/download-rustedit', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
