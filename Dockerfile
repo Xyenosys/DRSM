@@ -32,5 +32,3 @@ COPY --from=build /app/publish .
 # Switch to steam user and run application
 USER steam
 ENTRYPOINT ["dotnet", "DRSM.dll"]
-
-

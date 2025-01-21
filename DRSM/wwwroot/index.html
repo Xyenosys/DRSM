@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust Server Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rust Server Manager</h1>
+    <button onclick="sendRequest('start')">Start Server</button>
+    <button onclick="sendRequest('stop')">Stop Server</button>
+    <button onclick="sendRequest('restart')">Restart Server</button>
+    <button onclick="sendRequest('install')">Install Server</button>
+	<button onclick="sendRequest('download-umod')">Download uMod</button>
+	<button onclick="sendRequest('download-rustedit')">Download RustEdit</button>
+
+    <div id="response">
+        <strong>Response:</strong>
+        <pre id="responseText">No action performed yet.</pre>
+    </div>
+
+    <script>
+        async function sendRequest(action) {
+            const url = `/api/${action}`;
+            try {
+                const response = await fetch(url, { method: "POST" });
+                const result = await response.text();
+                alert(result);
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to execute action: " + action);
+            }
+        }
+    </script>
+</body>
+</html>

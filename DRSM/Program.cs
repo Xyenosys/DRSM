@@ -14,11 +14,16 @@ class Program
             Console.WriteLine("Error: " + ex.Message);
         }
         var builder = WebApplication.CreateBuilder();
-
-        // Register services
         builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
 
         var app = builder.Build();
+
+        // Enable serving static files from the wwwroot folder
+        app.UseStaticFiles();
+
+        // Map a fallback to serve index.html for the frontend
+        app.MapFallbackToFile("index.html");
 
         // Configure HTTP request pipeline
         app.MapControllers();

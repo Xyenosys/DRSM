@@ -27,17 +27,18 @@ public class SteamCmd
     public static void InstallRustServer(string serverFolder)
     {
         Console.WriteLine("Installing Rust server...");
-
-        // Ensure the server folder exists
-        var createServerDirResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"mkdir -p {serverFolder}\"");
-        if (createServerDirResult.Item1 != 0)
+        if (!File.Exists(serverFolder))
         {
-            throw new Exception($"Failed to create server directory: {createServerDirResult.Item2}");
+            // Ensure the server folder exists
+            var createServerDirResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"mkdir -p {serverFolder}\"");
+            if (createServerDirResult.Item1 != 0)
+            {
+                throw new Exception($"Failed to create server directory: {createServerDirResult.Item2}");
+            }
         }
-
         // Command to download and install Rust server
         string steamCmdExecutable = Path.Combine(Globals.SteamCmdDir, "steamcmd.sh");
-        string installCommand = $"+force_install_dir {serverFolder} +login anonymous +app_update 258550 validate +quit";
+        string installCommand = $"+force_install_dir {serverFolder} +login anonymous +app_update 258550 +quit";
 
         var installResult = RunShellCommand("sudo", $"-u {Globals.SteamUser} bash -c \"{steamCmdExecutable} {installCommand}\"");
         if (installResult.Item1 != 0)
